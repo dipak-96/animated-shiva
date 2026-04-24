@@ -1,0 +1,15 @@
+function countDigit(num,target){
+    let count=0;
+    while(num>0){
+        let digit=num%10;
+        if(digit==target){
+            count++;
+
+        }
+        num=Math.floor(num/10);
+        
+    }
+
+    return count;
+}
+console.log(countDigit(2333444888888,3));
