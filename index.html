@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Image Resizer by ShivaDipak</title>
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Favicon -->
+<link rel="icon" href="logo.png">
+
+<style>
+@keyframes fadeIn {
+  from {opacity:0; transform:translateY(30px);}
+  to {opacity:1; transform:translateY(0);}
+}
+.animate-fade {
+  animation: fadeIn 1s ease-out;
+}
+</style>
+
+</head>
+
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
+
+<div class="bg-gray-800 p-6 rounded-2xl shadow-lg w-[380px] text-center animate-fade">
+
+  <!-- Branding -->
+  <h1 class="text-3xl font-extrabold text-blue-400">ShivaDipak</h1>
+  <p class="text-gray-400 mb-4">Image Resizer Tool 🚀</p>
+
+  <!-- Upload -->
+  <input type="file" id="upload" class="mb-4 w-full p-2 bg-gray-700 rounded">
+
+  <!-- Preview -->
+  <img id="preview" class="hidden mb-4 rounded shadow"/>
+
+  <!-- Inputs -->
+  <div class="flex gap-2 mb-4">
+    <input type="number" id="width" placeholder="Width" class="w-1/2 p-2 rounded bg-gray-700">
+    <input type="number" id="height" placeholder="Height" class="w-1/2 p-2 rounded bg-gray-700">
+  </div>
+
+  <!-- Presets -->
+  <div class="flex gap-2 mb-4">
+    <button onclick="setPreset(1080,1080)" class="bg-purple-500 px-2 py-1 rounded text-sm">Instagram</button>
+    <button onclick="setPreset(820,312)" class="bg-pink-500 px-2 py-1 rounded text-sm">Facebook</button>
+  </div>
+
+  <!-- Resize -->
+  <button onclick="resizeImage()" class="bg-blue-500 hover:bg-blue-600 w-full py-2 rounded mb-3">
+    Resize Image
+  </button>
+
+  <!-- Canvas -->
+  <canvas id="canvas" class="hidden"></canvas>
+
+  <!-- Download -->
+  <button onclick="downloadImage()" id="downloadBtn"
+    class="bg-green-500 hover:bg-green-600 w-full py-2 rounded hidden">
+    Download Image
+  </button>
+
+  <!-- Credit -->
+  <p class="text-xs text-gray-500 mt-4">Made by ShivaDipak 🚀</p>
+
+</div>
+
+<script>
+
+let img = new Image();
+let aspectRatio = 1;
+
+// Upload + Preview
+document.getElementById("upload").addEventListener("change", function(e){
+    let file = e.target.files[0];
+    let reader = new FileReader();
+
+    reader.onload = function(event){
+        img.src = event.target.result;
+        document.getElementById("preview").src = event.target.result;
+        document.getElementById("preview").classList.remove("hidden");
+    }
+
+    reader.readAsDataURL(file);
+});
+
+// Auto ratio
+img.onload = function(){
+    aspectRatio = img.width / img.height;
+}
+
+// Preset
+function setPreset(w,h){
+    document.getElementById("width").value = w;
+    document.getElementById("height").value = h;
+}
+
+// Resize
+function resizeImage(){
+    let width = document.getElementById("width").value;
+    let height = document.getElementById("height").value;
+
+    if(!width && !height){
+        alert("Enter width or height");
+        return;
+    }
+
+    if(width && !height){
+        height = Math.round(width / aspectRatio);
+    }
+    if(height && !width){
+        width = Math.round(height * aspectRatio);
+    }
+
+    let canvas = document.getElementById("canvas");
+    let ctx = canvas.getContext("2d");
+
+    canvas.width = width;
+    canvas.height = height;
+
+    ctx.drawImage(img, 0, 0, width, height);
+
+    document.getElementById("downloadBtn").classList.remove("hidden");
+}
+
+// Download
+function downloadImage(){
+    let canvas = document.getElementById("canvas");
+
+    let link = document.createElement("a");
+    link.download = "resized-image.png";
+    link.href = canvas.toDataURL();
+
+    link.click();
+}
+
+</script>
+
+</body>
+</html>
